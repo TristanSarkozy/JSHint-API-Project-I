@@ -21,7 +21,39 @@ async function postForm(e) {
                                         "Authorization": API_KEY,
         },
                                 body: form,
-    })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        displayErrors(data);
+    } else {
+        throw new Error(data.error);
+    }
+}
+
+// Add "a take in data as a parameter" function to format the response
+function displayErrors(data) {
+
+    let heading = `JSHint Results for ${data.file}`;
+
+    if (data.total_errors === 0) {
+        results = `<div class="no_errors">No errors reported!</div>`;
+    } else{
+        results = `<div>Total Errors: <span class="error_count">${data.total_errors}</span>`;
+        for (let error of data.error_list) {
+            results += `<div>At line <span class="line">${error.line}</span>, `;
+            results += `column <span class="column">${error.col}</span></div>`;
+            results += `<div class="error">${error.error}</div>`
+        }
+    }
+
+    // Set the heading in the modal
+    document.getElementById("resultsModalTitle").innerText = heading;
+    // Set the content in the modal
+    document.getElementById("results-content").innerHTML = results;
+    // Display the modal
+    resultsModal.show();
 }
 
 // Add a getStatus function to make FIRST a GET request to the API_URL with the API_KEY
@@ -49,6 +81,5 @@ function displayStatus(data) {
 
     document.getElementById("resultsModalTitle").innerText = heading;
     document.getElementById("results-content").innerHTML = results;
-
     resultsModal.show();
 }
