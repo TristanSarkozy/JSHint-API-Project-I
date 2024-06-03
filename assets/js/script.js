@@ -6,6 +6,23 @@ const resultsModal = new bootstrap.Modal(document.getElementById("resultsModal")
 
 // Add a standard event listener to wire up the button
 document.getElementById("status").addEventListener("click", e => getStatus(e));
+// Add an event listener so the button can call the function postForm
+document.getElementById("submit").addEventListener("click", e => postForm(e));
+
+async function postForm(e) {
+    const form = new FormData(document.getElementById("checksform"));
+
+    // Add a constant to to make the POST request to the API,
+    // authorize it with the API key,
+    // attach the form as the body of the request
+    const response = await fetch(API_URL, {
+                                method: "POST",
+                                headers: {
+                                        "Authorization": API_KEY,
+        },
+                                body: form,
+    })
+}
 
 // Add a getStatus function to make FIRST a GET request to the API_URL with the API_KEY
 // ..SECOND to pass the data to a display function
