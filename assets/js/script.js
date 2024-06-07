@@ -48,7 +48,8 @@ async function postForm(e) {
 
     if (response.ok) {
         displayErrors(data);
-    } else {
+            // Add call to displayException with data as a parameter
+    } else {displayException(data);
         throw new Error(data.error);
     }
 }
@@ -64,7 +65,8 @@ async function getStatus(e) {
 
     if (response.ok) {
         displayStatus(data);
-    } else {
+            // Add call to displayException with data as a parameter
+    } else {displayException(data);
         throw new Error(data.error);
     }
 }
@@ -102,5 +104,23 @@ function displayStatus(data) {
 
     document.getElementById("resultsModalTitle").innerText = heading;
     document.getElementById("results-content").innerHTML = results;
+    resultsModal.show();
+}
+
+// Add function and take data as a parameter
+function displayException(data) {
+    // Add code to display the heading
+    let heading = `An Exception Occured`;
+    
+    // Add code to display the modal body(Status code, error number and exception text)
+    results = `<div>The API returned status code ${data.status_code}</div>`;
+    results += `<div>Error number: <strong>${data.error_no}</strong></div>`;
+    results += `<div>Error text: <strong>${data.error}</strong></div>`;
+
+    // Add code to set the content on the DOM 
+    document.getElementById("resultsModalTitle").innerText = heading;
+    document.getElementById("results-content").innerHTML = results;
+
+    // Add code to display the modal using Bootstrap method
     resultsModal.show();
 }
