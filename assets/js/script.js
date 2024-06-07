@@ -9,29 +9,61 @@ document.getElementById("status").addEventListener("click", e => getStatus(e));
 // Add an event listener so the button can call the function postForm
 document.getElementById("submit").addEventListener("click", e => postForm(e));
 
-async function postForm(e) {
-    const form = new FormData(document.getElementById("checksform"));
+// Add a function to take the form data as a parameter to send the options in a comma separated list
+function processOptions(form) {
+    // Iterate through the options
+    // Push each value into a temporary array
+    // Convert the array back to a string
+    let optArray = [];
 
-    // Add a test code and declare the form constant
     for (let entry of form.entries()) {
-        console.log(entry);
+        if (entry[0] === "options") {
+            optArray.push(entry[1]);
+        }
     }
+    // Add delete options to delete the existing options and add new ones
+    form.delete("options");
+
+    form.append("options", optArray.join());
+
+    return form;
+    
+}
+
+async function postForm(e) {
+    const form = processOptions(new FormData(document.getElementById("checksform")));
 
     // Add a constant to to make the POST request to the API,
     // authorize it with the API key,
     // attach the form as the body of the request
     const response = await fetch(API_URL, {
-                                method: "POST",
-                                headers: {
-                                        "Authorization": API_KEY,
+        method: "POST",
+        headers: {
+            "Authorization": API_KEY,
         },
-                                body: form,
+        body: form,
     });
 
     const data = await response.json();
 
     if (response.ok) {
         displayErrors(data);
+    } else {
+        throw new Error(data.error);
+    }
+}
+
+// Add a getStatus function to make FIRST a GET request to the API_URL with the API_KEY
+// ..SECOND to pass the data to a display function
+async function getStatus(e) {
+    const queryString = `${API_URL}?api_key=${API_KEY}`;
+
+    const response = await fetch(queryString);
+    
+    const data = await response.json();
+
+    if (response.ok) {
+        displayStatus(data);
     } else {
         throw new Error(data.error);
     }
@@ -59,22 +91,6 @@ function displayErrors(data) {
     document.getElementById("results-content").innerHTML = results;
     // Display the modal
     resultsModal.show();
-}
-
-// Add a getStatus function to make FIRST a GET request to the API_URL with the API_KEY
-// ..SECOND to pass the data to a display function
-async function getStatus(e) {
-    const queryString = `${API_URL}?api_key=${API_KEY}`;
-
-    const response = await fetch(queryString);
-    
-    const data = await response.json();
-
-    if (response.ok) {
-        displayStatus(data);
-    } else {
-        throw new Error(data.error);
-    }
 }
 
 // Add function to display results in modal
