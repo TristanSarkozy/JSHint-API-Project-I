@@ -12,6 +12,11 @@ document.getElementById("submit").addEventListener("click", e => postForm(e));
 async function postForm(e) {
     const form = new FormData(document.getElementById("checksform"));
 
+    // Add a test code and declare the form constant
+    for (let entry of form.entries()) {
+        console.log(entry);
+    }
+
     // Add a constant to to make the POST request to the API,
     // authorize it with the API key,
     // attach the form as the body of the request
